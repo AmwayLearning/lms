@@ -1108,7 +1108,7 @@ function renderCourses(){
     $('#catalog').innerHTML = `<div class="empty"><h3>No courses published yet</h3>Courses appear here once they're added to the Courses sheet with "active" set to TRUE.</div>`;
   } else if (!list.length) {
     $('#catalog').innerHTML = `<div class="empty"><h3>Nothing matches</h3>Try a different search or filter.</div>`;
-  } else if (current || q || S.filter !== 'all' || cats.length < 2) {
+  } else if (current || q || S.filter !== 'all' || !cats.some(c => c.name !== OTHER)) {
     $('#catalog').innerHTML = grid(list);   // one category, a search or a filter: a plain grid
   } else {
     // home view: category tiles, then a section per category
