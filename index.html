@@ -435,7 +435,7 @@ const CONFIG = {
   APP_NAME: 'W.I.S.E Programme',
   // Paste your Google Apps Script Web App URL (ends with /exec).
   // Leave it empty to try the LMS in demo mode (progress saved in the browser only).
-  API_URL: 'https://script.google.com/macros/s/AKfycbxqq8FBeoyaKf416ycAcq0UFg70j0qw8NUXHco4tAORYAVQhHvbkqOAlnwX3zG4WVN1/exec',
+  API_URL: '',
 };
 
 /* Courses shown in demo mode only. With a Google Sheet connected, the
@@ -1088,6 +1088,7 @@ function downloadCSV(){
    ===================================================================== */
 const statusLabel = s => ({ passed:'Passed', completed:'Completed', failed:'Not passed', incomplete:'In progress', browsed:'Browsed' }[String(s||'').toLowerCase()] || 'In progress');
 let saving = Promise.resolve(), saveErrors = 0;
+const LATEST = {}; // newest tracking data per course in this tab, so a quick reopen never loads an older copy
 
 function setSaveState(state){
   const el = $('#pSave'); el.className = 'save-dot hide-sm' + (state === 'saving' ? ' saving' : state === 'err' ? ' err' : '');
@@ -1095,6 +1096,7 @@ function setSaveState(state){
 }
 
 function onSave(payload, { useBeacon }){
+  LATEST[payload.courseId] = payload.cmi;
   // Optimistic local update so the catalog reflects progress instantly
   const old = S.progress[payload.courseId] || {};
   const s = payload.summary;
@@ -1119,7 +1121,10 @@ async function openCourse(id){
   $('#player').hidden = false; document.body.style.overflow = 'hidden';
   history.pushState({ player:true }, '');
   try {
-    const [launch, attempt] = await Promise.all([resolveLaunch(course), api('getAttempt', { courseId:id })]);
+    // Wait for any save still on its way to Google Sheets, then prefer the copy this tab already has
+    await saving;
+    const loadAttempt = LATEST[id] ? Promise.resolve({ cmi: JSON.parse(LATEST[id]) }) : api('getAttempt', { courseId:id });
+    const [launch, attempt] = await Promise.all([resolveLaunch(course), loadAttempt]);
     delete window.API; delete window.API_1484_11;
     let src;
     if (launch.kind === 'xapi') {
