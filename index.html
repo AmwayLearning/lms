@@ -162,6 +162,33 @@ main{padding-block:28px 64px}
 .chip .n{opacity:.6;margin-left:4px}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+
+/* categories */
+.sec-title{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 14px}
+.sec-title h2{font-size:22px;font-weight:700}
+.sec-title .n{font-size:13px;color:var(--muted);font-weight:500;margin-left:8px;font-family:var(--font-body)}
+.link-btn{border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:6px 2px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.link-btn:hover{text-decoration:underline}
+.link-btn svg.i{width:16px;height:16px}
+.cat-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:36px}
+.cat-tile{position:relative;display:flex;flex-direction:column;text-align:left;padding:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface);color:inherit;transition:transform .2s, box-shadow .2s}
+.cat-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.cat-tile .art{position:relative;aspect-ratio:16/8;max-width:100%;background:var(--surface-2);overflow:hidden}
+.cat-tile .art img,.cat-tile .art canvas{width:100%;height:100%;object-fit:cover;display:block}
+.cat-tile .art::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgb(9 30 25 / .72),rgb(9 30 25 / 0) 70%)}
+.cat-tile .art b{position:absolute;left:14px;right:14px;bottom:10px;z-index:1;color:#fff;font-family:var(--font-display);font-size:19px;line-height:1.15;text-wrap:balance;text-shadow:0 1px 8px rgb(0 0 0 / .3)}
+.cat-tile .info{display:grid;gap:8px;padding:12px 14px 14px;font-size:13px;color:var(--muted)}
+.cat-tile .info .row{display:flex;justify-content:space-between;gap:8px}
+.cat-tile .done-all{color:var(--good);font-weight:700}
+.cat-sec{margin-bottom:36px}
+.cat-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:22px}
+.cat-hero h1{font-size:clamp(24px,3.2vw,34px);font-weight:800;margin-top:2px}
+.cat-hero p{margin:6px 0 0;color:var(--muted);max-width:65ch}
+.cat-hero .prog{min-width:200px;display:grid;gap:6px;font-size:13px;color:var(--muted);font-weight:600}
+.pick-group{display:grid;gap:6px}
+.pick-group + .pick-group{margin-top:8px}
+.pick-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:0 2px}
+.pick-head b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .card{display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--line);transition:transform .2s, box-shadow .2s;text-align:left;padding:0;color:inherit}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .thumb{position:relative;aspect-ratio:16/9;max-width:100%;background:var(--surface-2);overflow:hidden}
@@ -252,6 +279,11 @@ td small{display:block;color:var(--muted);font-size:12px}
   .resume .thumb-mini{width:52px;height:52px}
   .resume .btn{grid-column:1/-1}
   .grid{grid-template-columns:1fr;gap:16px}
+  .cat-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .cat-tile .art b{font-size:16px;left:10px;right:10px}
+  .cat-tile .info{padding:10px 10px 12px;font-size:12px}
+  .cat-hero{grid-template-columns:1fr;padding:16px}
+  .cat-hero .prog{min-width:0}
   .tabs{gap:0}.tabs button{padding:8px 10px;font-size:14px}
   .ed-2{grid-template-columns:1fr}
   #editor{place-items:end center;padding:0}
@@ -340,11 +372,13 @@ td small{display:block;color:var(--muted);font-size:12px}
 
       <div id="resume"></div>
 
+      <div id="catHead"></div>
+
       <div class="toolbar">
         <label class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="q" type="search" placeholder="Search courses" aria-label="Search courses"></label>
         <div class="chips" id="chips"></div>
       </div>
-      <div class="grid" id="grid"></div>
+      <div id="catalog"></div>
     </section>
 
     <!-- learners view (admins) -->
@@ -435,18 +469,23 @@ const CONFIG = {
   APP_NAME: 'W.I.S.E Programme',
   // Paste your Google Apps Script Web App URL (ends with /exec).
   // Leave it empty to try the LMS in demo mode (progress saved in the browser only).
-  API_URL: '',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxqq8FBeoyaKf416ycAcq0UFg70j0qw8NUXHco4tAORYAVQhHvbkqOAlnwX3zG4WVN1/exec',
 };
 
 /* Courses shown in demo mode only. With a Google Sheet connected, the
    Courses sheet decides what learners see. */
 const DEMO_COURSES = [
-  { id:'sample-course', title:'Getting Started with Your LMS', category:'Sample', duration:'5 min',
+  { id:'sample-course', title:'Getting Started with Your LMS', category:'Getting Started', duration:'5 min',
     description:'A short SCORM 1.2 sample course with a quiz. Use it to test tracking, then delete this row.', folder:'courses/sample-course' },
-  { id:'sample-2004', title:'Safety Basics (SCORM 2004 sample)', category:'Sample', duration:'5 min',
+  { id:'sample-2004', title:'Safety Basics (SCORM 2004 sample)', category:'Health & Safety', duration:'5 min',
     description:'The same sample built as SCORM 2004, so you can confirm both formats work.', folder:'courses/sample-2004' },
-  { id:'sample-xapi', title:'Healthy Plate Basics (xAPI sample)', category:'Sample', duration:'5 min',
+  { id:'sample-xapi', title:'Healthy Plate Basics (xAPI sample)', category:'Nutrition', duration:'5 min',
     description:'An xAPI (Tin Can) sample. Every answer is logged as a statement in the Statements sheet.', folder:'courses/sample-xapi' },
+];
+const DEMO_CATEGORIES = [
+  { name:'Getting Started', description:'Start here: how the programme and this learning site work.', order:1 },
+  { name:'Nutrition', description:'Food, balanced plates and everyday eating habits.', order:2 },
+  { name:'Health & Safety', description:'Staying safe and well at work and at home.', order:3 },
 ];
 
 /* =====================================================================
@@ -516,7 +555,7 @@ function demoApi(req){
     case 'bootstrap': {
       const e = authed(), u = db.users[e];
       const allow = !u.courses || u.courses === 'all' ? null : u.courses.split(',').map(x => x.trim());
-      return { user: u, courses: DEMO_COURSES.filter(c => u.role === 'admin' || !allow || allow.includes(c.id)), progress: db.progress[e] || {} };
+      return { user: u, courses: DEMO_COURSES.filter(c => u.role === 'admin' || !allow || allow.includes(c.id)), categories: DEMO_CATEGORIES, progress: db.progress[e] || {} };
     }
     case 'listLearners': {
       authed(); return { learners: Object.values(db.users).map(u => Object.assign({ active:true, courses:'all' }, u)), courses: DEMO_COURSES };
@@ -931,7 +970,19 @@ const API2004 = {
 /* =====================================================================
    App state + rendering
    ===================================================================== */
-const S = { user:null, courses:[], progress:{}, filter:'all', q:'', view:'courses', report:null };
+const S = { user:null, courses:[], categories:[], progress:{}, filter:'all', q:'', cat:null, view:'courses', report:null };
+const OTHER = 'Other courses';
+/* Categories come from each course's "category" column; the Categories sheet adds a description, picture and order. */
+function buildCategories(courses){
+  const meta = {}; (S.categories || []).forEach(c => { meta[String(c.name).trim().toLowerCase()] = c; });
+  const groups = new Map();
+  courses.forEach(c => { const name = String(c.category || '').trim() || OTHER; if (!groups.has(name)) groups.set(name, []); groups.get(name).push(c); });
+  return Array.from(groups, ([name, list]) => {
+    const m = meta[name.toLowerCase()] || {};
+    const done = list.filter(c => statusKind(S.progress[c.id]) === 'done').length;
+    return { name, description: m.description || '', thumbnail: m.thumbnail || '', order: m.order === undefined || m.order === '' ? 999 : Number(m.order), courses: list, done, total: list.length };
+  }).sort((a, b) => (a.name === OTHER) - (b.name === OTHER) || a.order - b.order || a.name.localeCompare(b.name));
+}
 
 function applyBranding(){
   document.querySelectorAll('.app-name').forEach(e => e.textContent = CONFIG.APP_NAME);
@@ -975,6 +1026,32 @@ function pctOf(p){
   return k === 'prog' || k === 'fail' ? 50 : 0;
 }
 
+function cardHTML(c, showCat = true){
+  const P = S.progress, p = P[c.id], k = statusKind(p), pct = pctOf(p);
+  const cta = k === 'done' ? 'Review' : k === 'new' ? 'Start course' : k === 'fail' ? 'Try again' : 'Continue';
+  const score = p && p.score !== '' && p.score !== undefined && p.score !== null ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5-6.5 4.5 2-7.5L2 9h7z"/></svg>${esc(p.score)}%</span>` : '';
+  return `<article class="card">
+    <div class="thumb">${thumbHTML(c)}${badge(p) ? `<div style="position:absolute;top:12px;left:12px">${badge(p)}</div>` : ''}</div>
+    <div class="card-body">
+      ${c.category && showCat ? `<div class="cat">${esc(c.category)}</div>` : ''}
+      <h3>${esc(c.title)}</h3>
+      ${c.description ? `<p>${esc(c.description)}</p>` : ''}
+      <div class="card-foot">
+        <div class="meta">
+          ${c.duration ? `<span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${esc(c.duration)}</span>` : ''}
+          ${p && p.totalTime ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>${fmtMins(p.totalTime)} spent</span>` : ''}
+          ${score}
+        </div>
+        ${k !== 'new' ? `<div class="bar ${k==='done'?'done':''}"><i style="width:${pct}%"></i></div>` : ''}
+        <div class="card-cta">
+          <span class="pct num">${k === 'new' ? 'Not started' : k === 'done' ? 'Finished ' + fmtDate(p.completedAt) : pct + '% done'}</span>
+          <button class="btn sm ${k === 'done' ? 'ghost' : ''}" data-open="${esc(c.id)}">${cta}</button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
 function renderCourses(){
   const P = S.progress;
   const counts = { all:S.courses.length, prog:0, done:0, new:0 };
@@ -997,47 +1074,57 @@ function renderCourses(){
       <button class="btn" data-open="${esc(recent.id)}">Resume<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>` : '';
 
+  // which courses are in view: everything, or one category
+  const cats = buildCategories(S.courses);
+  if (S.cat && !cats.some(c => c.name === S.cat)) S.cat = null;
+  const current = S.cat ? cats.find(c => c.name === S.cat) : null;
+  const scope = current ? current.courses : S.courses;
+
+  const sc = { all:scope.length, prog:0, done:0, new:0 };
+  scope.forEach(c => { const k = statusKind(P[c.id]); if (k === 'done') sc.done++; else if (k === 'new') sc.new++; else sc.prog++; });
   const chipDefs = [['all','All'],['prog','In progress'],['new','Not started'],['done','Completed']];
-  $('#chips').innerHTML = chipDefs.map(([k,l]) => `<button class="chip" data-f="${k}" aria-pressed="${S.filter===k}">${l}<span class="n num">${counts[k]}</span></button>`).join('');
+  $('#chips').innerHTML = chipDefs.map(([k,l]) => `<button class="chip" data-f="${k}" aria-pressed="${S.filter===k}">${l}<span class="n num">${sc[k]}</span></button>`).join('');
+  $('#q').placeholder = current ? 'Search in ' + current.name : 'Search courses';
+
+  $('#resume').hidden = !!current;
+  $('#catHead').innerHTML = current ? `
+    <button class="link-btn" data-cat="" style="margin-bottom:10px"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>All categories</button>
+    <div class="cat-hero">
+      <div style="min-width:0"><div class="eyebrow">Category</div><h1>${esc(current.name)}</h1>${current.description ? `<p>${esc(current.description)}</p>` : ''}</div>
+      <div class="prog"><span class="num">${current.done} of ${current.total} course${current.total === 1 ? '' : 's'} completed</span><div class="bar done"><i style="width:${current.total ? Math.round(current.done / current.total * 100) : 0}%"></i></div></div>
+    </div>` : '';
 
   const q = S.q.trim().toLowerCase();
-  const list = S.courses.filter(c => {
+  const matches = c => {
     const k = statusKind(P[c.id]);
     if (S.filter === 'prog' && !(k === 'prog' || k === 'fail')) return false;
     if (S.filter !== 'all' && S.filter !== 'prog' && k !== S.filter) return false;
     return !q || (c.title + ' ' + c.description + ' ' + c.category).toLowerCase().includes(q);
-  });
+  };
+  const list = scope.filter(matches);
+  const grid = (items, showCat = !current) => `<div class="grid">${items.map(c => cardHTML(c, showCat)).join('')}</div>`;
 
   if (!S.courses.length) {
-    $('#grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>No courses published yet</h3>Courses appear here once they're added to the Courses sheet with "active" set to TRUE.</div>`;
+    $('#catalog').innerHTML = `<div class="empty"><h3>No courses published yet</h3>Courses appear here once they're added to the Courses sheet with "active" set to TRUE.</div>`;
   } else if (!list.length) {
-    $('#grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>Nothing matches</h3>Try a different search or filter.</div>`;
+    $('#catalog').innerHTML = `<div class="empty"><h3>Nothing matches</h3>Try a different search or filter.</div>`;
+  } else if (current || q || S.filter !== 'all' || cats.length < 2) {
+    $('#catalog').innerHTML = grid(list);   // one category, a search or a filter: a plain grid
   } else {
-    $('#grid').innerHTML = list.map(c => {
-      const p = P[c.id], k = statusKind(p), pct = pctOf(p);
-      const cta = k === 'done' ? 'Review' : k === 'new' ? 'Start course' : k === 'fail' ? 'Try again' : 'Continue';
-      const score = p && p.score !== '' && p.score !== undefined ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5-6.5 4.5 2-7.5L2 9h7z"/></svg>${esc(p.score)}%</span>` : '';
-      return `<article class="card">
-        <div class="thumb">${thumbHTML(c)}${badge(p) ? `<div style="position:absolute;top:12px;left:12px">${badge(p)}</div>` : ''}</div>
-        <div class="card-body">
-          ${c.category ? `<div class="cat">${esc(c.category)}</div>` : ''}
-          <h3>${esc(c.title)}</h3>
-          ${c.description ? `<p>${esc(c.description)}</p>` : ''}
-          <div class="card-foot">
-            <div class="meta">
-              ${c.duration ? `<span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${esc(c.duration)}</span>` : ''}
-              ${p && p.totalTime ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>${fmtMins(p.totalTime)} spent</span>` : ''}
-              ${score}
-            </div>
-            ${k !== 'new' ? `<div class="bar ${k==='done'?'done':''}"><i style="width:${pct}%"></i></div>` : ''}
-            <div class="card-cta">
-              <span class="pct num">${k === 'new' ? 'Not started' : k === 'done' ? 'Finished ' + fmtDate(p.completedAt) : pct + '% done'}</span>
-              <button class="btn sm ${k === 'done' ? 'ghost' : ''}" data-open="${esc(c.id)}">${cta}</button>
-            </div>
-          </div>
-        </div>
-      </article>`;
+    // home view: category tiles, then a section per category
+    const MAX = 4;
+    const tiles = cats.map(c => {
+      const pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+      return `<button class="cat-tile" data-cat="${esc(c.name)}" aria-label="${esc(c.name)}, ${c.total} courses">
+        <div class="art">${c.thumbnail ? `<img src="${esc(c.thumbnail)}" alt="" loading="lazy">` : `<canvas data-art="cat:${esc(c.name)}"></canvas>`}<b>${esc(c.name)}</b></div>
+        <div class="info"><div class="row"><span class="num">${c.total} course${c.total === 1 ? '' : 's'}</span>${c.done === c.total ? '<span class="done-all">All done</span>' : `<span class="num">${c.done} done</span>`}</div>
+        <div class="bar done"><i style="width:${pct}%"></i></div></div></button>`;
     }).join('');
+    const sections = cats.map(c => `<section class="cat-sec">
+        <div class="sec-title"><h2>${esc(c.name)}<span class="n num">${c.total} course${c.total === 1 ? '' : 's'}</span></h2>
+          <button class="link-btn" data-cat="${esc(c.name)}">${c.total > MAX ? 'See all ' + c.total : 'Open'}<svg class="i" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div>
+        ${grid(c.courses.slice(0, MAX), false)}</section>`).join('');
+    $('#catalog').innerHTML = `<div class="sec-title"><h2>Browse by category</h2></div><div class="cat-strip">${tiles}</div>${sections}`;
   }
   paintArt();
 }
@@ -1182,10 +1269,10 @@ async function boot(){
   const session = store.get('lms.session');
   if (!session) return showAuth();
   $('#auth').hidden = true; $('#app').hidden = false;
-  $('#grid').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+  $('#catalog').innerHTML = '<div class="grid"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>';
   try {
     const d = await api('bootstrap');
-    S.user = d.user; S.courses = d.courses; S.progress = d.progress || {};
+    S.user = d.user; S.courses = d.courses; S.categories = d.categories || []; S.progress = d.progress || {};
     store.set('lms.session', Object.assign(session, { user: d.user }));
     $('#avatarBtn').textContent = (S.user.name || S.user.email).split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
     $('#menuName').textContent = S.user.name; $('#menuEmail').textContent = S.user.email;
@@ -1194,7 +1281,7 @@ async function boot(){
     renderCourses();
   } catch(e){
     if (!store.get('lms.session')) return showAuth();
-    $('#grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><h3>Couldn't load your courses</h3>${esc(e.message)}<div style="margin-top:16px"><button class="btn" onclick="boot()">Try again</button></div></div>`;
+    $('#catalog').innerHTML = `<div class="empty"><h3>Couldn't load your courses</h3>${esc(e.message)}<div style="margin-top:16px"><button class="btn" onclick="boot()">Try again</button></div></div>`;
   }
 }
 window.boot = boot;
@@ -1260,7 +1347,13 @@ function openEditor(email){
   const v = u ? String(u.courses || 'all') : 'all', all = !v || /^all$/i.test(v);
   const chosen = all ? [] : v.split(/[,;]+/).map(x => x.trim());
   $('#eAll').checked = all; $('#eSome').checked = !all;
-  $('#ePick').innerHTML = L.courses.map(c => `<label><input type="checkbox" value="${esc(c.id)}" ${chosen.includes(c.id) ? 'checked' : ''}>${esc(c.title)}${c.active === false ? '<small>Hidden</small>' : ''}</label>`).join('') || '<p class="help">No courses in the Courses sheet yet.</p>';
+  const groups = new Map();
+  L.courses.forEach(c => { const g = String(c.category || '').trim() || OTHER; if (!groups.has(g)) groups.set(g, []); groups.get(g).push(c); });
+  $('#ePick').innerHTML = Array.from(groups, ([g, cs]) => {
+    const allOn = cs.every(c => chosen.includes(c.id));
+    return `<div class="pick-group"><div class="pick-head"><b>${esc(g)}</b><button type="button" class="link-btn" data-pickall>${allOn ? 'Clear' : 'Select all'}</button></div>` +
+      cs.map(c => `<label><input type="checkbox" value="${esc(c.id)}" ${chosen.includes(c.id) ? 'checked' : ''}>${esc(c.title)}${c.active === false ? '<small>Hidden</small>' : ''}</label>`).join('') + '</div>';
+  }).join('') || '<p class="help">No courses in the Courses sheet yet.</p>';
   $('#ePick').hidden = all; $('#edError').hidden = true;
   $('#editor').hidden = false; setTimeout(() => $('#eName').focus(), 50);
 }
@@ -1290,6 +1383,10 @@ $('#authForm').addEventListener('submit', async ev => {
 document.addEventListener('click', ev => {
   const open = ev.target.closest('[data-open]'); if (open) return openCourse(open.dataset.open);
   const chip = ev.target.closest('[data-f]'); if (chip) { S.filter = chip.dataset.f; return renderCourses(); }
+  const catBtn = ev.target.closest('[data-cat]');
+  if (catBtn) { S.cat = catBtn.dataset.cat || null; S.filter = 'all'; S.q = ''; $('#q').value = ''; renderCourses(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const pickAll = ev.target.closest('[data-pickall]');
+  if (pickAll) { const boxes = Array.from(pickAll.closest('.pick-group').querySelectorAll('input[type=checkbox]')); const on = !boxes.every(b => b.checked); boxes.forEach(b => b.checked = on); pickAll.textContent = on ? 'Clear' : 'Select all'; return; }
   const tab = ev.target.closest('#tabs button'); if (tab) return switchView(tab.dataset.view);
   const ed = ev.target.closest('[data-edit]'); if (ed) return openEditor(ed.dataset.edit);
   if (!ev.target.closest('#menu') && !ev.target.closest('#avatarBtn')) $('#menu').hidden = true;
