@@ -304,7 +304,41 @@ td small{display:block;color:var(--muted);font-size:12px}
   .l-card .meta{font-size:12px}
   .p-bar .hide-sm{display:none}
 }
-@media (prefers-reduced-motion: reduce){*,*::before{animation:none!important;transition:none!important}}
+/* ---------- motion ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.13) translate(-1.5%,-1.5%)}}
+@keyframes drift{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.12) translate(-2.5%,1.5%)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.anim-in{animation:rise .55s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+.anim-in .bar i,.cat-hero .bar i,.resume .bar i{transform-origin:left center;animation:grow 1s cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--i,0) * 70ms + 250ms)}
+#bgLayer{animation:drift 45s ease-in-out infinite alternate}
+.auth-card{animation:pop .7s cubic-bezier(.2,.75,.25,1) both}
+.auth-art::before{content:"";position:absolute;inset:0;background:inherit;animation:kenburns 22s ease-in-out infinite alternate}
+.auth-art .brand{animation:rise .6s .25s both}
+.auth-copy > *{animation:rise .7s cubic-bezier(.2,.75,.25,1) both}
+.auth-copy > *:nth-child(2){animation-delay:.15s}
+.auth-form > *{animation:rise .6s cubic-bezier(.2,.75,.25,1) both;animation-delay:.3s}
+.auth-form > *:nth-child(2){animation-delay:.36s}.auth-form > *:nth-child(3){animation-delay:.42s}.auth-form > *:nth-child(4){animation-delay:.48s}.auth-form > *:nth-child(5){animation-delay:.54s}.auth-form > *:nth-child(6){animation-delay:.6s}.auth-form > *:nth-child(7){animation-delay:.66s}
+.thumb img,.thumb canvas,.cat-tile .art img,.cat-tile .art canvas,.thumb-mini canvas,.thumb-mini img{transition:transform .7s cubic-bezier(.2,.75,.25,1)}
+.card:hover .thumb img,.card:hover .thumb canvas{transform:scale(1.07)}
+.cat-tile:hover .art img,.cat-tile:hover .art canvas{transform:scale(1.1)}
+.resume .btn svg.i{transition:transform .25s}
+.resume .btn:hover svg.i{transform:translateX(4px)}
+.link-btn svg.i{transition:transform .2s}
+.link-btn:hover svg.i{transform:translateX(3px)}
+.chip{transition:background .2s,color .2s,border-color .2s,transform .15s}
+.chip:active{transform:scale(.95)}
+.brand-mark{transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.brand:hover .brand-mark{transform:rotate(-8deg) scale(1.06)}
+.stat{transition:transform .25s,box-shadow .25s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.ed{animation:pop .3s cubic-bezier(.2,.75,.25,1)}
+.view-in{animation:rise .45s cubic-bezier(.2,.75,.25,1) both}
+.badge.done{animation:floaty 3s ease-in-out infinite}
+#confetti{position:fixed;inset:0;z-index:95;pointer-events:none}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -475,6 +509,7 @@ td small{display:block;color:var(--muted);font-size:12px}
 </div>
 
 <div id="toast" role="status" hidden></div>
+<canvas id="confetti" hidden aria-hidden="true"></canvas>
 
 <script>
 /* =====================================================================
@@ -1076,12 +1111,49 @@ function cardHTML(c, showCat = true){
   </article>`;
 }
 
-function renderCourses(){
+/* ---- motion helpers ---- */
+const CALM = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stagger(nodes){
+  if (CALM()) return;
+  Array.from(nodes).forEach((el, i) => { el.style.setProperty('--i', Math.min(i, 14)); el.classList.remove('anim-in'); void el.offsetWidth; el.classList.add('anim-in'); });
+}
+function countUp(el, to){
+  if (CALM() || !to) { el.textContent = to; return; }
+  const t0 = performance.now(), dur = 900;
+  (function tick(t){ const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(tick); })(t0);
+}
+function celebrate(){
+  if (CALM()) return;
+  const cv = $('#confetti'), ctx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  cv.hidden = false; cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+  const colors = ['#7ac943','#29abe2','#f7931e','#1f5fbf','#e9a23b','#43c2a8'];
+  const parts = Array.from({ length: 140 }, () => ({
+    x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .35,
+    vx: (Math.random() - .5) * 14, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 4,
+    rot: Math.random() * 6, vr: (Math.random() - .5) * .3, c: colors[Math.random() * colors.length | 0], shape: Math.random() < .5 }));
+  const t0 = performance.now();
+  (function frame(t){
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    const age = (t - t0) / 1000;
+    parts.forEach(p => {
+      p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.globalAlpha = Math.max(0, 1 - Math.max(0, age - 2) / 1.2); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c;
+      if (p.shape) ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); else { ctx.beginPath(); ctx.arc(0, 0, p.r / 2.4, 0, 7); ctx.fill(); }
+      ctx.restore();
+    });
+    if (age < 3.3) requestAnimationFrame(frame); else { ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0, 0, cv.width, cv.height); cv.hidden = true; }
+  })(t0);
+}
+
+function renderCourses(opts = {}){
+  const animate = opts.animate !== false;
   const P = S.progress;
   const counts = { all:S.courses.length, prog:0, done:0, new:0 };
   let time = 0;
   S.courses.forEach(c => { const k = statusKind(P[c.id]); if (k === 'done') counts.done++; else if (k === 'new') counts.new++; else counts.prog++; time += (P[c.id] && P[c.id].totalTime) || 0; });
-  $('#stProg').textContent = counts.prog; $('#stDone').textContent = counts.done; $('#stTime').textContent = fmtMins(time);
+  if (opts.intro) { countUp($('#stProg'), counts.prog); countUp($('#stDone'), counts.done); stagger(document.querySelectorAll('.hello > div > *, .stat')); }
+  else { $('#stProg').textContent = counts.prog; $('#stDone').textContent = counts.done; }
+  $('#stTime').textContent = fmtMins(time);
 
   $('#greeting').textContent = 'Welcome to ' + CONFIG.APP_NAME;
   $('#today').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'long' });
@@ -1150,6 +1222,7 @@ function renderCourses(){
         ${grid(c.courses.slice(0, MAX), false)}</section>`).join('');
     $('#catalog').innerHTML = `<div class="sec-title"><h2>Browse by category</h2></div><div class="cat-strip">${tiles}</div>${sections}`;
   }
+  if (animate) stagger(document.querySelectorAll('#resume .resume, #catHead .cat-hero, #catalog > .sec-title, #catalog .cat-tile, #catalog .cat-sec > .sec-title, #catalog .card, #catalog .empty'));
   paintArt();
 }
 
@@ -1211,6 +1284,10 @@ function onSave(payload, { useBeacon }){
   // Optimistic local update so the catalog reflects progress instantly
   const old = S.progress[payload.courseId] || {};
   const s = payload.summary;
+  if (!isDone(old.status) && isDone(s.status)) {
+    const course = S.courses.find(c => c.id === payload.courseId);
+    setTimeout(() => { celebrate(); toast('Well done! You completed ' + (course ? course.title : 'this course') + '.'); }, 300);
+  }
   S.progress[payload.courseId] = Object.assign({}, old, {
     status: isDone(old.status) && !isDone(s.status) ? old.status : s.status,
     score: s.score !== '' ? s.score : old.score, progress: s.progress !== '' ? s.progress : old.progress,
@@ -1275,7 +1352,7 @@ function closeCourse(fromHistory){
   if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
   if (!fromHistory && history.state && history.state.player) history.back();
   renderCourses();
-  saving.then(() => renderCourses());
+  saving.then(() => renderCourses({ animate:false }));
 }
 window.closeCourse = closeCourse;
 window.addEventListener('popstate', () => closeCourse(true));
@@ -1302,7 +1379,7 @@ async function boot(){
     $('#menuName').textContent = S.user.name; $('#menuEmail').textContent = S.user.email;
     $('#tabs').hidden = String(S.user.role).toLowerCase() !== 'admin';
     if ($('#tabs').hidden || S.view === 'courses') switchView('courses');
-    renderCourses();
+    renderCourses({ intro:true });
   } catch(e){
     if (!store.get('lms.session')) return showAuth();
     $('#catalog').innerHTML = `<div class="empty"><h3>Couldn't load your courses</h3>${esc(e.message)}<div style="margin-top:16px"><button class="btn" onclick="boot()">Try again</button></div></div>`;
@@ -1318,6 +1395,8 @@ function switchView(v){
   S.view = v;
   document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v));
   $('#viewCourses').hidden = v !== 'courses'; $('#viewReports').hidden = v !== 'reports'; $('#viewLearners').hidden = v !== 'learners';
+  const shown = { courses:'#viewCourses', reports:'#viewReports', learners:'#viewLearners' }[v];
+  if (shown && !CALM()) { const el = $(shown); el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); }
   if (v === 'reports') loadReport();
   if (v === 'learners') loadLearners();
 }
@@ -1443,7 +1522,7 @@ $('#themeBtn').onclick = () => {
   const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   const next = cur === 'dark' ? 'light' : 'dark'; store.set('lms.theme', next); applyTheme(next);
 };
-$('#q').addEventListener('input', e => { S.q = e.target.value; renderCourses(); });
+$('#q').addEventListener('input', e => { S.q = e.target.value; renderCourses({ animate:false }); });
 ['#rq','#rCourse','#rStatus'].forEach(s => $(s).addEventListener('input', renderReport));
 $('#csvBtn').onclick = downloadCSV;
 $('#addLearner').onclick = () => openEditor(null);
