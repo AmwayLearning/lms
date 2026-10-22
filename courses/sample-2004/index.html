@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample SCORM course</title>
+<style>
+  :root{--bg:#fbfaf7;--ink:#1d2a26;--muted:#62706b;--accent:#0e6b5c;--soft:#e3f1ec;--line:#e4e8e6;--good:#1d7f47;--bad:#b9461a}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+  .dots{display:flex;gap:6px}.dots i{width:28px;height:5px;border-radius:9px;background:var(--line)}.dots i.on{background:var(--accent)}
+  main{flex:1;overflow:auto;padding:28px 20px}
+  .slide{max-width:640px;margin:0 auto}
+  h1{font-size:clamp(24px,5vw,34px);line-height:1.2;margin:0 0 14px}
+  .tag{display:inline-block;background:var(--soft);color:var(--accent);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px;margin-bottom:14px}
+  .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:16px 0}
+  .q{margin:20px 0}.q b{display:block;margin-bottom:8px}
+  .q label{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;margin:6px 0;cursor:pointer;background:#fff}
+  .q label:has(input:checked){border-color:var(--accent);background:var(--soft)}
+  footer{padding:12px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+  button{font:inherit;font-weight:600;border:0;border-radius:99px;padding:11px 22px;cursor:pointer;background:var(--accent);color:#fff}
+  button.ghost{background:var(--line);color:var(--ink)}
+  button:disabled{opacity:.4;cursor:default}
+  .result{font-size:44px;font-weight:800}
+  .pass{color:var(--good)}.fail{color:var(--bad)}
+</style>
+</head>
+<body>
+<header><span id="who">Sample course</span><div class="dots" id="dots"></div></header>
+<main><div class="slide" id="slide"></div></main>
+<footer><button class="ghost" id="prev">Back</button><button id="next">Next</button></footer>
+<script>
+/* ---- Minimal SCORM wrapper: works with SCORM 1.2 (window.API) and SCORM 2004 (window.API_1484_11) ---- */
+var S = (function(){
+  function find(w){ for (var i=0; w && i<10; i++){ if (w.API_1484_11) return {v:'2004', api:w.API_1484_11}; if (w.API) return {v:'1.2', api:w.API}; if (w.parent === w) break; w = w.parent; } return null; }
+  var f = find(window) || (window.opener && find(window.opener));
+  var v = f ? f.v : null, a = f ? f.api : null, on = false;
+  var map = { location:['cmi.core.lesson_location','cmi.location'], suspend:['cmi.suspend_data','cmi.suspend_data'], name:['cmi.core.student_name','cmi.learner_name'],
+              raw:['cmi.core.score.raw','cmi.score.raw'], min:['cmi.core.score.min','cmi.score.min'], max:['cmi.core.score.max','cmi.score.max'], exit:['cmi.core.exit','cmi.exit'] };
+  function k(n){ return map[n][v === '1.2' ? 0 : 1]; }
+  return {
+    version: v,
+    init: function(){ if (!a) return false; on = String(v==='1.2' ? a.LMSInitialize('') : a.Initialize('')) === 'true'; return on; },
+    get: function(n){ if (!on) return ''; return v==='1.2' ? a.LMSGetValue(k(n)) : a.GetValue(k(n)); },
+    set: function(n, val){ if (!on) return; v==='1.2' ? a.LMSSetValue(k(n), String(val)) : a.SetValue(k(n), String(val)); },
+    raw: function(key12, key04, val){ if (!on) return; v==='1.2' ? a.LMSSetValue(key12, String(val)) : a.SetValue(key04, String(val)); },
+    commit: function(){ if (on) v==='1.2' ? a.LMSCommit('') : a.Commit(''); },
+    finish: function(){ if (!on) return; this.set('exit', 'suspend'); this.commit(); v==='1.2' ? a.LMSFinish('') : a.Terminate(''); on = false; },
+    status: function(st){ // 'incomplete' | 'completed' | 'passed' | 'failed'
+      if (v === '1.2') return this.raw('cmi.core.lesson_status', '', st);
+      if (st === 'passed' || st === 'failed'){ this.raw('', 'cmi.success_status', st); this.raw('', 'cmi.completion_status', 'completed'); }
+      else this.raw('', 'cmi.completion_status', st);
+    },
+    progress: function(p){ if (v === '2004') this.raw('', 'cmi.progress_measure', p.toFixed(2)); },
+    scaled: function(p){ if (v === '2004') this.raw('', 'cmi.score.scaled', p.toFixed(2)); },
+  };
+})();
+
+/* ---- Course content ---- */
+var slides = [
+  { tag:'Welcome', title:'Welcome to your new LMS', body:'<p>This short course is a working SCORM package. As you move through it, the LMS saves where you are, how long you spent and your quiz score to Google Sheets.</p><div class="box">Try this: go to slide 3, then close the course with the back arrow. Open it again and you will land on the same slide.</div>' },
+  { tag:'How it works', title:'What SCORM tracks', body:'<p>SCORM is the standard most e-learning tools export to, including Articulate Storyline, Rise, iSpring and Adobe Captivate. A SCORM course reports four main things to the LMS:</p><div class="box"><b>Status</b> — not started, in progress, completed, passed or failed<br><b>Score</b> — the quiz result<br><b>Bookmark</b> — the page you stopped on<br><b>Time</b> — how long you spent</div>' },
+  { tag:'Your courses', title:'Adding your own courses', body:'<p>Export your course as a SCORM 1.2 or SCORM 2004 zip, unzip it, and upload the folder into <b>courses/</b> on your website. Then add one row to the <b>Courses</b> sheet with the folder path. That is all.</p>' },
+  { tag:'Quiz', title:'Quick check', quiz:true },
+];
+var QUIZ = [
+  { q:'Where does the LMS save learner progress?', a:['In Google Sheets','Inside the SCORM zip','On the learner\'s phone only'], c:0 },
+  { q:'What should you upload to the courses folder?', a:['The zip file as it is','The unzipped course folder','Only the imsmanifest.xml file'], c:1 },
+  { q:'Which file tells the LMS how to start a SCORM course?', a:['index.css','imsmanifest.xml','readme.txt'], c:1 },
+];
+var PASS = 70, cur = 0, done = false;
+
+function render(){
+  var s = slides[cur];
+  document.getElementById('dots').innerHTML = slides.map(function(_, i){ return '<i class="' + (i <= cur ? 'on' : '') + '"></i>'; }).join('');
+  var html = '<span class="tag">' + s.tag + '</span><h1>' + s.title + '</h1>';
+  if (s.quiz) {
+    html += done ? resultHTML() : QUIZ.map(function(q, i){
+      return '<div class="q"><b>' + (i+1) + '. ' + q.q + '</b>' + q.a.map(function(a, j){ return '<label><input type="radio" name="q' + i + '" value="' + j + '"> ' + a + '</label>'; }).join('') + '</div>';
+    }).join('');
+  } else html += s.body;
+  document.getElementById('slide').innerHTML = html;
+  document.getElementById('prev').disabled = cur === 0;
+  var next = document.getElementById('next');
+  next.textContent = s.quiz ? (done ? 'Retake quiz' : 'Submit answers') : 'Next';
+  S.set('location', cur);
+  S.progress((cur + 1) / slides.length);
+  S.commit();
+}
+var lastScore = null;
+function resultHTML(){
+  var ok = lastScore >= PASS;
+  return '<div class="box" style="text-align:center"><div class="result ' + (ok ? 'pass' : 'fail') + '">' + lastScore + '%</div><p>' +
+    (ok ? 'You passed. Your result is saved, and the course now shows as passed in the LMS.' : 'You need ' + PASS + '% to pass. Review the slides and try again.') + '</p></div>';
+}
+function submitQuiz(){
+  var right = 0, answered = 0;
+  QUIZ.forEach(function(q, i){ var el = document.querySelector('input[name=q' + i + ']:checked'); if (el){ answered++; if (+el.value === q.c) right++; } });
+  if (answered < QUIZ.length) {
+    var w = document.getElementById('warn') || document.getElementById('slide').appendChild(Object.assign(document.createElement('p'), { id:'warn' }));
+    w.style.color = 'var(--bad)'; w.textContent = 'Please answer every question.'; return;
+  }
+  lastScore = Math.round(right / QUIZ.length * 100);
+  S.set('min', 0); S.set('max', 100); S.set('raw', lastScore); S.scaled(lastScore / 100);
+  S.status(lastScore >= PASS ? 'passed' : 'failed');
+  S.set('suspend', JSON.stringify({ score:lastScore }));
+  done = true; S.commit(); render();
+}
+
+document.getElementById('prev').onclick = function(){ if (cur > 0){ cur--; render(); } };
+document.getElementById('next').onclick = function(){
+  if (slides[cur].quiz) { if (done) { done = false; render(); } else submitQuiz(); return; }
+  cur++; render();
+};
+window.addEventListener('pagehide', function(){ S.finish(); });
+window.addEventListener('beforeunload', function(){ S.finish(); });
+
+if (S.init()) {
+  var name = S.get('name');
+  document.getElementById('who').textContent = name ? 'Learner: ' + name.split(',').reverse().join(' ').trim() : 'Sample course';
+  var loc = parseInt(S.get('location'), 10); if (!isNaN(loc) && loc < slides.length) cur = loc;
+  try { var sd = JSON.parse(S.get('suspend') || '{}'); if (sd.score !== undefined) { lastScore = sd.score; done = true; } } catch(e){}
+  if (!done) S.status('incomplete');
+} else {
+  document.getElementById('who').textContent = 'Preview mode (no LMS found — progress is not tracked)';
+}
+render();
+</script>
+</body>
+</html>

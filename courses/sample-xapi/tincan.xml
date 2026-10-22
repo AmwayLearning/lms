@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://wise-programme.example/courses/sample-xapi" type="http://adlnet.gov/expapi/activities/course">
+      <name>Healthy Plate Basics (xAPI sample)</name>
+      <description lang="en-US">A short xAPI sample course with a quiz.</description>
+      <launch lang="en-us">index.html</launch>
+    </activity>
+  </activities>
+</tincan>
