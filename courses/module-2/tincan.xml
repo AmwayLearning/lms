@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://projecttincan.com/tincan.xsd"
+>
+  <activities>
+    <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en">Module 2​: Fundamentals of Nutrition</name>
+      <description lang="en"></description>
+      <launch lang="en">scormdriver/indexAPI.html</launch>
+    </activity>
+    
+      <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise/iNcZnn5FIzJzmPRu4x8vlFklEz8767bn" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Introduction &amp; Macronutrients/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise/ccYFqk_0vh6M2PQo4rrrkDLllugMf9fL" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Micronutrients/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise/j1IJkirocOyi6kp_ee5kCPCSTO6hqlwH" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Phytonutrients &amp; Hydration/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise/0SeFFOZtGW2I1Td1d_Qy24pCKFyJdoEY" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Pocket Notes &amp; Knowledge Check/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://uycqHzOw7Q_X4oNKUdAoVMZjDn921c2G_rise/Ob71JVx_7qN184-5aFPAVNNA2QBwyk9b" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Course end/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+  </activities>
+</tincan>
