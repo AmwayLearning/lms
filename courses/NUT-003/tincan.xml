@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://projecttincan.com/tincan.xsd"
+>
+  <activities>
+    <activity id="http://f859R6TGT7VCXAW7KHj5GpZi4EEq_S5j_rise" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en">MY Nutrilite Regimen - Fill</name>
+      <description lang="en"></description>
+      <launch lang="en">scormdriver/indexAPI.html</launch>
+    </activity>
+    
+      <activity id="http://f859R6TGT7VCXAW7KHj5GpZi4EEq_S5j_rise/5neRiczexE-Fll2moGLlj6b7yJ0INBBp" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+  </activities>
+</tincan>
