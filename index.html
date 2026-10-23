@@ -102,6 +102,39 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;bac
 
 #editor{position:fixed;inset:0;z-index:60;background:rgb(10 20 17 / .45);display:grid;place-items:center;padding:16px;animation:fade .2s}
 @keyframes fade{from{opacity:0}}
+
+/* course card popup */
+#detail{position:fixed;inset:0;z-index:60;background:rgb(10 20 17 / .5);display:grid;place-items:center;padding:16px;animation:fade .2s}
+.cd{position:relative;width:100%;max-width:560px;max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface);border-radius:24px;box-shadow:0 30px 80px -20px rgb(0 0 0 / .45);animation:pop .32s cubic-bezier(.2,.75,.25,1)}
+.cd-thumb{position:relative;aspect-ratio:16/9;max-width:100%;overflow:hidden;background:var(--surface-2)}
+.cd-thumb img,.cd-thumb canvas{width:100%;height:100%;object-fit:cover;display:block}
+.cd-close{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgb(255 255 255 / .92);color:#13201c;box-shadow:0 2px 10px rgb(0 0 0 / .2)}
+.cd-close:hover{background:#fff}
+.cd-body{display:grid;gap:16px;padding:20px 22px calc(22px + env(safe-area-inset-bottom,0px))}
+.cd-cat{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.cd-body h2{font-size:clamp(22px,4vw,28px);font-weight:800;margin-top:4px}
+.cd-desc{margin:0;color:var(--muted);line-height:1.6}
+.cd-prog{display:grid;gap:8px}
+.cd-prog .row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.cd-prog .bar{height:10px}
+.cd-prog .pill{font-size:13px;padding:4px 12px}
+.cd-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.fact{background:var(--surface-2);border-radius:12px;padding:10px 12px;display:grid;gap:2px}
+.fact span{font-size:12px;color:var(--muted);font-weight:500}
+.fact b{font-size:15px;font-variant-numeric:tabular-nums}
+.cd-actions{display:flex;gap:10px;flex-wrap:wrap}
+.cd-actions .btn{flex:1 1 170px;padding:13px 20px}
+.cd-share{display:grid;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:14px;animation:rise .3s cubic-bezier(.2,.75,.25,1)}
+.cd-share label{font-size:13px;font-weight:700}
+.copy-row{display:flex;gap:8px}
+.copy-row input{flex:1;min-width:0;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-size:13px;color:var(--ink)}
+.copy-row .btn{flex:none}
+.btn.copied{background:var(--good);color:#fff}
+.cd-msg{display:grid;gap:12px;padding:28px 24px;text-align:center}
+.cd-msg h2{font-size:22px}
+.cd-msg p{margin:0;color:var(--muted)}
+.shared-note{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);color:var(--ink);padding:10px 14px;border-radius:12px;font-size:14px}
+.shared-note svg.i{color:var(--accent);margin-top:2px}
 .ed{width:100%;max-width:540px;max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface);border-radius:22px;box-shadow:var(--shadow);display:flex;flex-direction:column}
 .ed-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 6px}
 .ed-head h2{font-size:22px}
@@ -198,12 +231,12 @@ main{padding-block:28px 64px}
 .pick-group + .pick-group{margin-top:8px}
 .pick-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:0 2px}
 .pick-head b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.card{display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--line);transition:transform .2s, box-shadow .2s;text-align:left;padding:0;color:inherit}
+.card{cursor:pointer;display:flex;flex-direction:column;background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--line);transition:transform .2s, box-shadow .2s;text-align:left;padding:0;color:inherit}
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .thumb{position:relative;aspect-ratio:16/9;max-width:100%;background:var(--surface-2);overflow:hidden}
 .thumb img,.thumb canvas{width:100%;height:100%;object-fit:cover;display:block}
 .thumb .badge{position:absolute;top:12px;left:12px}
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--ink)}
+.badge{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface);color:var(--ink)}
 .badge.done{background:var(--good);color:#fff}
 .badge.prog{background:var(--sun);color:#2a1a02}
 .badge.fail{background:var(--bad);color:#fff}
@@ -218,6 +251,9 @@ main{padding-block:28px 64px}
 .bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--sun);border-radius:inherit;transition:width .6s}
 .bar.done i{background:var(--good)}
+/* progress the course doesn't report as a number: a soft moving stripe instead of a made-up percentage */
+@keyframes stripes{to{background-position:28px 0}}
+.bar.unknown i{width:100%!important;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--sun) 75%,transparent) 0 7px,color-mix(in srgb,var(--sun) 35%,transparent) 7px 14px);background-size:28px 100%;animation:stripes 1.4s linear infinite}
 .card-cta{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .card-cta .pct{font-size:13px;font-weight:600;color:var(--muted)}
 
@@ -295,6 +331,9 @@ td small{display:block;color:var(--muted);font-size:12px}
   .cat-hero .prog{min-width:0}
   .tabs{gap:0}.tabs button{padding:8px 10px;font-size:14px}
   .ed-2{grid-template-columns:1fr}
+  #detail{place-items:end center;padding:0}
+  .cd{border-radius:22px 22px 0 0;max-height:94dvh}
+  .cd-body{padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
   #editor{place-items:end center;padding:0}
   .ed{border-radius:22px 22px 0 0;max-height:92dvh}
   #viewLearners .table-box{display:none}
@@ -366,6 +405,7 @@ td small{display:block;color:var(--muted);font-size:12px}
         <h2 id="formTitle" style="font-size:26px">Welcome back</h2>
         <p id="formSub" style="margin:4px 0 0;color:var(--muted)">Sign in with the email and ABO ID registered by your programme coordinator.</p>
       </div>
+      <div class="shared-note" id="sharedNote" hidden><svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg><span>Someone shared a course with you. Sign in and it opens straight away.</span></div>
       <div class="demo-note" id="demoNote" hidden><b>Demo mode.</b> No Google Sheet is connected yet, so progress is kept in this browser only. Sign in with any email and ABO ID.</div>
       <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" autocomplete="email" placeholder="you@company.com" required></div>
       <div class="field"><label for="fAbo">ABO ID</label><input id="fAbo" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. 7012345" required></div>
@@ -476,6 +516,10 @@ td small{display:block;color:var(--muted);font-size:12px}
     <div class="p-msg" id="pMsg"><div><div class="spinner"></div>Opening course…</div></div>
   </div>
 </section>
+
+<div id="detail" hidden>
+  <div class="cd" id="cdBox" role="dialog" aria-modal="true" aria-labelledby="cdTitle"></div>
+</div>
 
 <div id="editor" hidden>
   <form class="ed" id="edForm" novalidate role="dialog" aria-modal="true" aria-labelledby="edTitle">
@@ -1079,17 +1123,18 @@ function badge(p){
   if (k === 'prog') return `<span class="badge prog">In progress</span>`;
   return '';
 }
-function pctOf(p){
-  const k = statusKind(p); if (k === 'done') return 100;
-  const n = parseFloat(p && p.progress); if (!isNaN(n)) return Math.max(0, Math.min(100, n));
-  return k === 'prog' || k === 'fail' ? 50 : 0;
+function pctOf(p){   // null = the course doesn't report how far the learner is
+  const k = statusKind(p); if (k === 'done') return 100; if (k === 'new') return 0;
+  const n = parseFloat(p && p.progress); if (!isNaN(n)) return Math.max(0, Math.min(100, Math.round(n)));
+  return null;
 }
+const barHTML = (p, extra = '') => { const k = statusKind(p), pct = pctOf(p); return `<div class="bar ${k === 'done' ? 'done' : ''} ${pct === null ? 'unknown' : ''} ${extra}"><i style="width:${pct === null ? 100 : pct}%"></i></div>`; };
 
 function cardHTML(c, showCat = true){
   const P = S.progress, p = P[c.id], k = statusKind(p), pct = pctOf(p);
   const cta = k === 'done' ? 'Review' : k === 'new' ? 'Start course' : k === 'fail' ? 'Try again' : 'Continue';
   const score = p && p.score !== '' && p.score !== undefined && p.score !== null ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5-6.5 4.5 2-7.5L2 9h7z"/></svg>${esc(p.score)}%</span>` : '';
-  return `<article class="card">
+  return `<article class="card" data-detail="${esc(c.id)}" tabindex="0" role="button" aria-label="${esc(c.title)}: view course">
     <div class="thumb">${thumbHTML(c)}${badge(p) ? `<div style="position:absolute;top:12px;left:12px">${badge(p)}</div>` : ''}</div>
     <div class="card-body">
       ${c.category && showCat ? `<div class="cat">${esc(c.category)}</div>` : ''}
@@ -1101,10 +1146,10 @@ function cardHTML(c, showCat = true){
           ${p && p.totalTime ? `<span><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>${fmtMins(p.totalTime)} spent</span>` : ''}
           ${score}
         </div>
-        ${k !== 'new' ? `<div class="bar ${k==='done'?'done':''}"><i style="width:${pct}%"></i></div>` : ''}
+        ${k !== 'new' ? barHTML(p) : ''}
         <div class="card-cta">
-          <span class="pct num">${k === 'new' ? 'Not started' : k === 'done' ? 'Finished ' + fmtDate(p.completedAt) : pct + '% done'}</span>
-          <button class="btn sm ${k === 'done' ? 'ghost' : ''}" data-open="${esc(c.id)}">${cta}</button>
+          <span class="pct num">${k === 'new' ? 'Not started' : k === 'done' ? 'Finished ' + fmtDate(p.completedAt) : pct === null ? (k === 'fail' ? 'Not passed yet' : 'In progress') : pct + '% done'}</span>
+          <span class="btn sm ${k === 'done' ? 'ghost' : ''}" aria-hidden="true">${cta}</span>
         </div>
       </div>
     </div>
@@ -1166,7 +1211,7 @@ function renderCourses(opts = {}){
     <div class="resume">
       <div class="thumb-mini">${thumbHTML(recent)}</div>
       <div style="min-width:0"><div class="eyebrow">Continue learning</div><h3>${esc(recent.title)}</h3>
-        <div class="bar"><i style="width:${pctOf(P[recent.id])}%"></i></div></div>
+        ${barHTML(P[recent.id])}</div>
       <button class="btn" data-open="${esc(recent.id)}">Resume<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>` : '';
 
@@ -1302,12 +1347,104 @@ function onSave(payload, { useBeacon }){
   }).catch(e => { saveErrors++; setSaveState('err'); if (saveErrors < 3) toast('Progress not saved: ' + e.message); });
 }
 
-async function openCourse(id){
+/* ---- course card popup + share links ---- */
+const shareLink = id => location.origin + location.pathname + '?course=' + encodeURIComponent(id);
+const statusText = p => { const k = statusKind(p); return k === 'done' ? (/passed/i.test(p.status) ? 'Passed' : 'Completed') : k === 'fail' ? 'Not passed' : k === 'prog' ? 'In progress' : 'Not started'; };
+function openDetail(id, opts = {}){
+  const c = S.courses.find(x => x.id === id);
+  const box = $('#cdBox');
+  if (!c) {
+    box.innerHTML = `<div class="cd-msg">
+      <h2 id="cdTitle">This course isn't available to you</h2>
+      <p>It may not be assigned to you yet, or it has been removed. Please contact your programme coordinator.</p>
+      <div><button class="btn" data-cd="close">Back to my courses</button></div></div>`;
+  } else {
+    const p = S.progress[id], k = statusKind(p), pct = pctOf(p);
+    const cta = k === 'done' ? 'Review course' : k === 'new' ? 'Start course' : k === 'fail' ? 'Try again' : 'Continue course';
+    const pillCls = k === 'new' ? '' : k;
+    const facts = [
+      c.duration && ['Duration', esc(c.duration)],
+      p && p.totalTime ? ['Time spent', fmtMins(p.totalTime)] : null,
+      p && p.score !== '' && p.score !== undefined && p.score !== null ? ['Score', esc(p.score) + '%'] : null,
+      p && p.completedAt ? ['Completed', fmtDate(p.completedAt)] : p && p.lastAccess ? ['Last opened', fmtDate(p.lastAccess)] : null,
+    ].filter(Boolean);
+    box.innerHTML = `
+      <div class="cd-thumb">${thumbHTML(c)}</div>
+      <button class="icon-btn cd-close" data-cd="close" aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <div class="cd-body">
+        <div>${c.category ? `<div class="cd-cat">${esc(c.category)}</div>` : ''}<h2 id="cdTitle">${esc(c.title)}</h2></div>
+        <div class="cd-prog">
+          <div class="row"><span class="pill ${pillCls}">${statusText(p)}</span><span class="num">${pct === null ? '' : pct + '% complete'}</span></div>
+          ${barHTML(p)}
+        </div>
+        ${c.description ? `<p class="cd-desc">${esc(c.description)}</p>` : ''}
+        ${facts.length ? `<div class="cd-facts">${facts.map(([l, v]) => `<div class="fact"><span>${l}</span><b>${v}</b></div>`).join('')}</div>` : ''}
+        <div class="cd-actions">
+          <button class="btn" data-cd="start"><svg class="i" viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg>${cta}</button>
+          <button class="btn ghost" data-cd="share" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share course</button>
+        </div>
+        <div class="cd-share" id="cdShare" hidden>
+          <label for="cdLink">Link to this course</label>
+          <div class="copy-row"><input id="cdLink" readonly value="${esc(shareLink(c.id))}"><button class="btn sm" data-cd="copy">Copy link</button></div>
+          <p class="help">People who open this link sign in with their email and ABO ID and land on this course. They need to be registered, with this course assigned to them.</p>
+          ${navigator.share ? '<button class="link-btn" data-cd="native" style="justify-self:start">Share with an app…</button>' : ''}
+        </div>
+      </div>`;
+    box.dataset.id = id;
+    paintArt(box);
+  }
+  const wasOpen = !$('#detail').hidden;
+  $('#detail').hidden = false; document.body.style.overflow = 'hidden';
+  if (!wasOpen) history.pushState({ detail:true }, '');
+  setTimeout(() => { const b = box.querySelector('[data-cd="start"], [data-cd="close"]'); if (b) b.focus({ preventScroll:true }); }, 60);
+}
+function closeDetail(fromHistory){
+  if ($('#detail').hidden) return;
+  $('#detail').hidden = true; $('#cdBox').innerHTML = '';
+  if ($('#player').hidden) document.body.style.overflow = '';
+  if (!fromHistory && history.state && history.state.detail) history.back();
+}
+async function copyLink(btn){
+  const input = $('#cdLink'), done = () => { btn.textContent = 'Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2200); };
+  try { await navigator.clipboard.writeText(input.value); done(); }
+  catch(e){
+    input.focus(); input.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch(_){}
+    if (ok) done(); else toast('Press Ctrl+C (or long-press on a phone) to copy the selected link.');
+  }
+}
+$('#detail').addEventListener('click', ev => {
+  if (ev.target.id === 'detail') return closeDetail();
+  const b = ev.target.closest('[data-cd]'); if (!b) return;
+  const id = $('#cdBox').dataset.id;
+  if (b.dataset.cd === 'close') closeDetail();
+  else if (b.dataset.cd === 'start') { $('#detail').hidden = true; $('#cdBox').innerHTML = ''; openCourse(id, { replace:true }); }
+  else if (b.dataset.cd === 'share') { const sh = $('#cdShare'); sh.hidden = !sh.hidden; b.setAttribute('aria-expanded', String(!sh.hidden)); if (!sh.hidden) { $('#cdLink').select(); sh.scrollIntoView({ block:'nearest', behavior:'smooth' }); } }
+  else if (b.dataset.cd === 'copy') copyLink(b);
+  else if (b.dataset.cd === 'native') { const c = S.courses.find(x => x.id === id); navigator.share({ title: c ? c.title : CONFIG.APP_NAME, text: 'Take this course on ' + CONFIG.APP_NAME + ':', url: shareLink(id) }).catch(() => {}); }
+});
+
+/* A shared link (…/lms/?course=<id>) remembers the course until the person has signed in. */
+let PENDING = null;
+try {
+  const q = new URLSearchParams(location.search).get('course');
+  const h = (location.hash.match(/^#course-(.+)$/) || [])[1];
+  PENDING = q || (h && decodeURIComponent(h)) || null;
+  if (PENDING) sessionStorage.setItem('lms.pending', PENDING); else PENDING = sessionStorage.getItem('lms.pending');
+} catch(e){}
+function takePending(){
+  const id = PENDING; PENDING = null;
+  try { sessionStorage.removeItem('lms.pending'); } catch(e){}
+  if (location.search || /^#course-/.test(location.hash)) history.replaceState(history.state, '', location.pathname);
+  return id;
+}
+
+async function openCourse(id, opts = {}){
   const course = S.courses.find(c => c.id === id); if (!course) return;
   $('#pTitle').textContent = course.title; $('#pStatus').textContent = 'Loading…'; setSaveState('ok');
   $('#pStage').innerHTML = `<div class="p-msg"><div><div class="spinner"></div>Opening course…</div></div>`;
   $('#player').hidden = false; document.body.style.overflow = 'hidden';
-  history.pushState({ player:true }, '');
+  if (opts.replace && history.state && history.state.detail) history.replaceState({ player:true }, ''); else history.pushState({ player:true }, '');
   try {
     // Wait for any save still on its way to Google Sheets, then prefer the copy this tab already has
     await saving;
@@ -1355,7 +1492,7 @@ function closeCourse(fromHistory){
   saving.then(() => renderCourses({ animate:false }));
 }
 window.closeCourse = closeCourse;
-window.addEventListener('popstate', () => closeCourse(true));
+window.addEventListener('popstate', () => { if (!$('#player').hidden) closeCourse(true); else closeDetail(true); });
 window.addEventListener('pagehide', () => endRuntime(true));
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && RT && RT.state === 1) RT.save(false, true); });
 
@@ -1363,7 +1500,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
    Auth + boot
    ===================================================================== */
 function showAuth(){
-  $('#app').hidden = true; $('#auth').hidden = false; $('#demoNote').hidden = !DEMO;
+  $('#app').hidden = true; $('#auth').hidden = false; $('#demoNote').hidden = !DEMO; $('#sharedNote').hidden = !PENDING;
   if (DEMO && !$('#fEmail').value) { $('#fEmail').value = 'demo@wise.test'; $('#fAbo').value = '7000001'; }
 }
 async function boot(){
@@ -1380,6 +1517,7 @@ async function boot(){
     $('#tabs').hidden = String(S.user.role).toLowerCase() !== 'admin';
     if ($('#tabs').hidden || S.view === 'courses') switchView('courses');
     renderCourses({ intro:true });
+    if (PENDING) { const id = takePending(); setTimeout(() => openDetail(id), CALM() ? 0 : 450); }
   } catch(e){
     if (!store.get('lms.session')) return showAuth();
     $('#catalog').innerHTML = `<div class="empty"><h3>Couldn't load your courses</h3>${esc(e.message)}<div style="margin-top:16px"><button class="btn" onclick="boot()">Try again</button></div></div>`;
@@ -1387,7 +1525,7 @@ async function boot(){
 }
 window.boot = boot;
 function logout(silent){
-  store.del('lms.session'); S.user = null; $('#menu').hidden = true;
+  store.del('lms.session'); S.user = null; $('#menu').hidden = true; closeDetail(true);
   if (silent === true) toast(SESSION_ERROR);
   showAuth();
 }
@@ -1506,6 +1644,7 @@ $('#authForm').addEventListener('submit', async ev => {
 });
 document.addEventListener('click', ev => {
   const open = ev.target.closest('[data-open]'); if (open) return openCourse(open.dataset.open);
+  const det = ev.target.closest('#catalog [data-detail]'); if (det) return openDetail(det.dataset.detail);
   const chip = ev.target.closest('[data-f]'); if (chip) { S.filter = chip.dataset.f; return renderCourses(); }
   const catBtn = ev.target.closest('[data-cat]');
   if (catBtn) { S.cat = catBtn.dataset.cat || null; S.filter = 'all'; S.q = ''; $('#q').value = ''; renderCourses(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
@@ -1548,7 +1687,12 @@ $('#edForm').addEventListener('submit', async ev => {
 });
 $('#pClose').onclick = () => closeCourse();
 $('#pFull').onclick = () => { const el = $('#player'); if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen().catch(()=>toast('Full screen isn\'t available on this device.')); else toast('Full screen isn\'t available on this device.'); };
-document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (!$('#editor').hidden) closeEditor(); else if (!$('#menu').hidden) $('#menu').hidden = true; });
+document.addEventListener('keydown', e => {
+  const card = e.target.closest && e.target.closest('#catalog [data-detail]');
+  if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); return openDetail(card.dataset.detail); }
+  if (e.key !== 'Escape') return;
+  if (!$('#editor').hidden) closeEditor(); else if (!$('#detail').hidden) closeDetail(); else if (!$('#menu').hidden) $('#menu').hidden = true;
+});
 
 applyBranding();
 applyTheme(store.get('lms.theme') || 'light'); // starts in light mode; learners can switch in the menu
