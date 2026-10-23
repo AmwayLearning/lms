@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://projecttincan.com/tincan.xsd"
+>
+  <activities>
+    <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en">WHY NUTRILITE</name>
+      <description lang="en"></description>
+      <launch lang="en">scormdriver/indexAPI.html</launch>
+    </activity>
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/93Rv6ptSkH_i3xompcPjCIzbvm38JZYX" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Introduction/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/cK0Q9iTrUg_3AiyzLm2rqwbdmWsQpl2l" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Why Nutrilite &amp; Why Supplement/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/g-IZ_RcOlw-ZsksdI7ZQhqmxEcLR_dQA" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">The Power of Phytonutrient/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/fxdwxxdo-oYKj60dKm8a0FBs_VYDgbLm" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Alfalfa- The Rise of Plant Power/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/vqjUd-e_2g-8H6MMMhhLSw-VgM1q-pCd" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nature and Science in Perfect Harmony/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/FNg0vggyq5Ldc6aSIExGf_Ia8a-oOnB1" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">History of Nutrilite/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/oSC44J7XItDAjbyMFUA6nSpcuZ-oL5g0" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Where It All Started/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/3Gd4KB16iFIVs8QWCASg4VflyK59_w3M" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Farms &amp; Traceability/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/uJx1fkMRsHzI-F86-K5A-VszaNuOaOoD" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Let&#39;s Visit Our Farm/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/J_QtQ4jNHO7bVMSsnztGh1lmMqQPMGJm" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Our Partners Farms/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/d2DF1kaa8gs6kCJTj8Pawywh1CIwErv3" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nutricert ™ Certification Programme /blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/upgggEWPQvxw2oX06MrwnwusxbDM8G9l" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nutrilite Organic Farming/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/CrDJKIO6k270vzRrPDae1jGSkVqla9dG" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Why Organic Farming/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/s5wVMFT9Hvm9uypbG_gymvMi1BSvM9Uv" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Sustainable Farming Techniques/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/wAZl-XsQ3k2Icp0p8neZ_cA_sTJ15jFB" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nature Manages Nature​/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/z8lKA8C3dptmTHCY9eG3W3iKoGF5GHYU" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nutrilite Traceability/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/QWENXlxDkb9rDdRBtDxtjKoYYwaYkUM1" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Traceability: Your Right To Know And Our Commitment To Show/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/VRnD9S5wTIwRjfJHXlb0dOefFg2J7uVj" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">SCIENTIFIC EXCELLENCE​/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/P-pdeCtz-X2y5pO30QnYuN6PdsNxu7NN" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">The Nutrilite Promise/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/riCaWf09XCuWK3SvM0pnOs49yNO1A9Ph" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Nutrilite Quality Standards/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/qBDRC7KdLZk78pPr7CKm6rrch1gb7FNh" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">AMWAY BOTANICAL RESEARCH CENTRE (ABRC)​/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/u80l83eTmGkk8popHcCP3EhjMFeTMA7F" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">The Heart of Modern Herbal Nutrition (MHN)​/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/4orNZfS9OOnZhi4OKhLYaj4EZzOT-a8N" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">The First, The Only, The Best/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://tXWpS2oxNArQ-fS6tUibjdYw8UUJujM__rise/t053Vqpp9UGhdw_cWlDzrBPr7wmn7eNe" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Course End/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+  </activities>
+</tincan>
