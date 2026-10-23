@@ -124,6 +124,25 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;bac
 .fact b{font-size:15px;font-variant-numeric:tabular-nums}
 .cd-actions{display:flex;gap:10px;flex-wrap:wrap}
 .cd-actions .btn{flex:1 1 170px;padding:13px 20px}
+.btn.gold{background:var(--sun);color:#2a1a02}
+/* certificates */
+.cert-wrap{display:grid;gap:16px;padding:20px 22px calc(22px + env(safe-area-inset-bottom,0px))}
+.cert-top{display:flex;align-items:center;gap:8px;min-height:38px;padding-right:44px}
+.cert-top h2{font-size:20px}
+.cert-img{position:relative;border-radius:14px;overflow:hidden;background:var(--surface-2);box-shadow:0 10px 30px -14px rgb(0 0 0 / .35);aspect-ratio:1.414;max-width:100%}
+.cert-img img{display:block;width:100%;height:100%}
+.cert-img .spinner{position:absolute;inset:0;margin:auto}
+.cert-actions{display:flex;gap:10px;flex-wrap:wrap}
+.cert-actions .btn{flex:1 1 160px}
+.cert-list{display:grid;gap:10px}
+.cert-row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;text-align:left;width:100%;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:inherit;transition:transform .2s,box-shadow .2s}
+.cert-row:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.cert-row .mini{width:72px;aspect-ratio:1.414;border-radius:8px;overflow:hidden;background:linear-gradient(135deg,#7ac943,#29abe2 60%,#1f5fbf);display:grid;place-items:center;color:#fff}
+.cert-row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cert-row small{color:var(--muted)}
+.cert-row .go{font-weight:700;color:var(--accent);font-size:14px;white-space:nowrap}
+.stat.clickable{cursor:pointer;text-align:left;color:inherit;font:inherit}
+@media (max-width:600px){.cert-wrap{padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px))}.cert-row{grid-template-columns:56px minmax(0,1fr)}.cert-row .mini{width:56px}.cert-row .go{display:none}}
 .cd-share{display:grid;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:14px;animation:rise .3s cubic-bezier(.2,.75,.25,1)}
 .cd-share label{font-size:13px;font-weight:700}
 .copy-row{display:flex;gap:8px}
@@ -432,6 +451,7 @@ td small{display:block;color:var(--muted);font-size:12px}
     <div class="menu" id="menu" hidden>
       <div class="who"><b id="menuName"></b><span id="menuEmail"></span></div>
       <button type="button" id="themeBtn"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg><span>Dark mode</span></button>
+      <button type="button" id="certsBtn"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>My certificates</button>
       <button type="button" id="refreshBtn"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Refresh courses</button>
       <button type="button" id="logoutBtn"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
     </div>
@@ -448,7 +468,7 @@ td small{display:block;color:var(--muted);font-size:12px}
         </div>
         <div class="stats">
           <div class="stat"><b class="num" id="stProg">0</b><span>In progress</span></div>
-          <div class="stat"><b class="num" id="stDone">0</b><span>Completed</span></div>
+          <button type="button" class="stat clickable" id="stDoneBtn" title="View my certificates"><b class="num" id="stDone">0</b><span>Completed</span></button>
           <div class="stat"><b class="num" id="stTime">0m</b><span>Time learning</span></div>
         </div>
       </div>
@@ -1331,7 +1351,8 @@ function onSave(payload, { useBeacon }){
   const s = payload.summary;
   if (!isDone(old.status) && isDone(s.status)) {
     const course = S.courses.find(c => c.id === payload.courseId);
-    setTimeout(() => { celebrate(); toast('Well done! You completed ' + (course ? course.title : 'this course') + '.'); }, 300);
+    S.justDone = payload.courseId;
+    setTimeout(() => { celebrate(); toast('Well done! You completed ' + (course ? course.title : 'this course') + '. Your certificate is ready.'); }, 300);
   }
   S.progress[payload.courseId] = Object.assign({}, old, {
     status: isDone(old.status) && !isDone(s.status) ? old.status : s.status,
@@ -1380,7 +1401,8 @@ function openDetail(id, opts = {}){
         ${c.description ? `<p class="cd-desc">${esc(c.description)}</p>` : ''}
         ${facts.length ? `<div class="cd-facts">${facts.map(([l, v]) => `<div class="fact"><span>${l}</span><b>${v}</b></div>`).join('')}</div>` : ''}
         <div class="cd-actions">
-          <button class="btn" data-cd="start"><svg class="i" viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg>${cta}</button>
+          ${k === 'done' ? `<button class="btn gold" data-cd="cert"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>View certificate</button>` : ''}
+          <button class="btn ${k === 'done' ? 'ghost' : ''}" data-cd="start"><svg class="i" viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg>${cta}</button>
           <button class="btn ghost" data-cd="share" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share course</button>
         </div>
         <div class="cd-share" id="cdShare" hidden>
@@ -1393,11 +1415,173 @@ function openDetail(id, opts = {}){
     box.dataset.id = id;
     paintArt(box);
   }
+  showSheet(opts);
+  setTimeout(() => { const b = box.querySelector('[data-cd="cert"], [data-cd="start"], [data-cd="close"]'); if (b) b.focus({ preventScroll:true }); }, 60);
+}
+function showSheet(opts = {}){
   const wasOpen = !$('#detail').hidden;
   $('#detail').hidden = false; document.body.style.overflow = 'hidden';
-  if (!wasOpen) history.pushState({ detail:true }, '');
-  setTimeout(() => { const b = box.querySelector('[data-cd="start"], [data-cd="close"]'); if (b) b.focus({ preventScroll:true }); }, 60);
+  if (!wasOpen && !opts.noPush) history.pushState({ detail:true }, '');
+  $('#cdBox').scrollTop = 0;
 }
+/* ---- completion certificates ---- */
+const certCourses = () => S.courses.filter(c => statusKind(S.progress[c.id]) === 'done')
+  .sort((a, b) => String(S.progress[b.id].completedAt || '').localeCompare(String(S.progress[a.id].completedAt || '')));
+const certId = c => { const p = S.progress[c.id] || {}; const h = hash(S.user.email + '|' + c.id + '|' + (p.completedAt || '')).toString(36).toUpperCase().padStart(8, '0'); return 'WISE-' + h.slice(0, 4) + '-' + h.slice(4, 8); };
+const longDate = iso => { const d = new Date(iso || Date.now()); return (isNaN(d) ? new Date() : d).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }); };
+let CERT = null; // { canvas, course }
+
+function openCerts(opts = {}){
+  const list = certCourses();
+  $('#cdBox').dataset.id = '';
+  $('#cdBox').innerHTML = `
+    <button class="icon-btn cd-close" data-cd="close" aria-label="Close" style="background:var(--surface-2);color:var(--ink)"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="cert-wrap">
+      <div class="cert-top"><h2 id="cdTitle">My certificates</h2></div>
+      ${list.length ? `<div class="cert-list">${list.map(c => `
+        <button class="cert-row" data-cd="certview" data-id="${esc(c.id)}">
+          <div class="mini"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg></div>
+          <div style="min-width:0"><b>${esc(c.title)}</b><small>Completed ${esc(longDate(S.progress[c.id].completedAt || S.progress[c.id].lastAccess))}</small></div>
+          <span class="go">View</span>
+        </button>`).join('')}</div>`
+      : `<div class="empty" style="padding:36px 20px"><h3>No certificates yet</h3>Finish a course and your certificate appears here, ready to download.</div>`}
+    </div>`;
+  showSheet(opts);
+}
+
+async function openCert(id, opts = {}){
+  const c = S.courses.find(x => x.id === id);
+  if (!c || statusKind(S.progress[id]) !== 'done') return openCerts(opts);
+  const box = $('#cdBox'); box.dataset.id = id;
+  const back = opts.back === 'list' ? '<button class="link-btn" data-cd="certs"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>All certificates</button>'
+             : opts.back === 'course' ? '<button class="link-btn" data-cd="course"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back to course</button>' : '';
+  box.innerHTML = `
+    <button class="icon-btn cd-close" data-cd="close" aria-label="Close" style="background:var(--surface-2);color:var(--ink)"><svg class="i" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="cert-wrap">
+      <div class="cert-top">${back || '<h2 id="cdTitle">Congratulations!</h2>'}</div>
+      ${back ? '<h2 id="cdTitle" style="font-size:22px;margin-top:-6px">Congratulations!</h2>' : ''}
+      <p class="cd-desc" style="margin-top:-8px">You completed <b style="color:var(--ink)">${esc(c.title)}</b>. Here is your certificate. You can come back to it any time from <b style="color:var(--ink)">My certificates</b>.</p>
+      <div class="cert-img" id="certImg"><div class="spinner"></div></div>
+      <div class="cert-actions">
+        <button class="btn" data-cd="png" disabled><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Download image</button>
+        <button class="btn ghost" data-cd="pdf" disabled><svg class="i" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>Download PDF</button>
+      </div>
+      <p class="help" style="margin:0">The name comes from your learner record. If it's spelled wrong, ask your programme coordinator to correct it, then open the certificate again.</p>
+    </div>`;
+  showSheet(opts);
+  try {
+    const canvas = await drawCertificate(c);
+    CERT = { canvas, course: c };
+    if ($('#cdBox').dataset.id !== id) return;   // the person moved on while it was drawing
+    const img = new Image(); img.alt = 'Certificate of completion for ' + c.title; img.src = canvas.toDataURL('image/png');
+    $('#certImg').innerHTML = ''; $('#certImg').appendChild(img);
+    box.querySelectorAll('[data-cd="png"], [data-cd="pdf"]').forEach(b => b.disabled = false);
+  } catch(e) { $('#certImg').innerHTML = `<div class="p-msg" style="position:static;padding:30px">Couldn't draw the certificate. ${esc(e.message || '')}</div>`; }
+}
+
+async function drawCertificate(c){
+  const W = 2000, H = 1414, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'), p = S.progress[c.id] || {};
+  const DISP = '"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif', BODY = '"Figtree", "Segoe UI", system-ui, sans-serif';
+  try { await Promise.all(['800 100px "Bricolage Grotesque"', '700 60px "Bricolage Grotesque"', '400 36px "Figtree"', '700 36px "Figtree"'].map(f => document.fonts.load(f))); } catch(e){}
+  const logo = await new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = 'logo.png'; });
+  const brand = x.createLinearGradient(0, 0, W, H); brand.addColorStop(0, '#7ac943'); brand.addColorStop(.5, '#29abe2'); brand.addColorStop(1, '#1f5fbf');
+  const spaced = (txt, px) => { if ('letterSpacing' in x) { x.letterSpacing = px + 'px'; return txt; } return txt.split('').join(' '); };
+  const fit = (txt, font, size, max, min) => { let s = size; do { x.font = font.replace('{s}', s); s -= 4; } while (x.measureText(txt).width > max && s > min); return s + 4; };
+
+  // paper + soft corner glows
+  x.fillStyle = '#fcfdf9'; x.fillRect(0, 0, W, H);
+  [[0, 0, '#7ac943'], [W, 0, '#29abe2'], [0, H, '#29abe2'], [W, H, '#1f5fbf']].forEach(([gx, gy, col]) => {
+    const g = x.createRadialGradient(gx, gy, 0, gx, gy, 520); g.addColorStop(0, col + '33'); g.addColorStop(1, col + '00'); x.fillStyle = g; x.fillRect(0, 0, W, H); });
+  // sparkles like the LMS background
+  const star = (sx, sy, r, col) => { x.save(); x.translate(sx, sy); x.fillStyle = col; x.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * .22 : r; x.lineTo(Math.sin(a) * rr, -Math.cos(a) * rr); } x.closePath(); x.fill(); x.restore(); };
+  star(250, 300, 34, '#f2b65e'); star(1760, 270, 26, '#7ac9e8'); star(1700, 1050, 30, '#f2b65e'); star(300, 1040, 22, '#9fd77a'); star(1820, 690, 16, '#9fd77a'); star(190, 690, 14, '#7ac9e8');
+  // frame
+  const rr = (rx, ry, rw, rh, r) => { x.beginPath(); x.moveTo(rx + r, ry); x.arcTo(rx + rw, ry, rx + rw, ry + rh, r); x.arcTo(rx + rw, ry + rh, rx, ry + rh, r); x.arcTo(rx, ry + rh, rx, ry, r); x.arcTo(rx, ry, rx + rw, ry, r); x.closePath(); };
+  x.lineWidth = 16; x.strokeStyle = brand; rr(44, 44, W - 88, H - 88, 36); x.stroke();
+  x.lineWidth = 2; x.strokeStyle = 'rgba(14,107,92,.28)'; rr(84, 84, W - 168, H - 168, 22); x.stroke();
+
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  if (logo) x.drawImage(logo, W / 2 - 110, 130, 220, 220);
+  x.fillStyle = '#0e6b5c'; x.font = `700 40px ${BODY}`; x.fillText(spaced('CERTIFICATE OF COMPLETION', 10), W / 2, 445); if ('letterSpacing' in x) x.letterSpacing = '0px';
+  x.fillStyle = '#5a6a65'; x.font = `400 36px ${BODY}`; x.fillText('This is to certify that', W / 2, 535);
+
+  const name = String(S.user.name || S.user.email).trim();
+  fit(name, `800 {s}px ${DISP}`, 124, 1500, 60); x.fillStyle = '#13201c'; x.fillText(name, W / 2, 680);
+  const nw = Math.min(1500, x.measureText(name).width) + 120;
+  const ul = x.createLinearGradient(W / 2 - nw / 2, 0, W / 2 + nw / 2, 0); ul.addColorStop(0, '#7ac94300'); ul.addColorStop(.2, '#7ac943'); ul.addColorStop(.8, '#29abe2'); ul.addColorStop(1, '#29abe200');
+  x.fillStyle = ul; x.fillRect(W / 2 - nw / 2, 718, nw, 5);
+
+  x.fillStyle = '#5a6a65'; x.font = `400 36px ${BODY}`; x.fillText('has successfully completed the course', W / 2, 805);
+  // course title, wrapped to two lines if needed
+  const title = String(c.title); let size = 66, lines = [title];
+  x.font = `700 ${size}px ${DISP}`;
+  if (x.measureText(title).width > 1500) {
+    const words = title.split(/\s+/); let best = [title];
+    for (let i = 1; i < words.length; i++) { const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '); if (Math.max(x.measureText(a).width, x.measureText(b).width) < Math.max(...best.map(l => x.measureText(l).width))) best = [a, b]; }
+    lines = best; while (Math.max(...lines.map(l => x.measureText(l).width)) > 1500 && size > 36) { size -= 4; x.font = `700 ${size}px ${DISP}`; }
+  }
+  x.fillStyle = '#0e6b5c'; lines.forEach((l, i) => x.fillText(l, W / 2, 895 + i * (size + 10)));
+  const afterTitle = 895 + (lines.length - 1) * (size + 10);
+  const bits = ['Completed on ' + longDate(p.completedAt || p.lastAccess)];
+  if (p.score !== '' && p.score !== undefined && p.score !== null && !isNaN(parseFloat(p.score))) bits.push('Score ' + Math.round(parseFloat(p.score)) + '%');
+  if (c.category) bits.push(c.category);
+  x.fillStyle = '#13201c'; x.font = `600 32px ${BODY}`; x.fillText(bits.join('   ·   '), W / 2, afterTitle + 90);
+
+  // seal
+  const sx = W / 2, sy = 1185;
+  x.fillStyle = brand; x.beginPath(); x.arc(sx, sy, 92, 0, Math.PI * 2); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 4; x.beginPath(); x.arc(sx, sy, 76, 0, Math.PI * 2); x.stroke();
+  x.strokeStyle = '#fff'; x.lineWidth = 14; x.lineCap = 'round'; x.lineJoin = 'round'; x.beginPath(); x.moveTo(sx - 36, sy + 2); x.lineTo(sx - 10, sy + 28); x.lineTo(sx + 40, sy - 26); x.stroke();
+  // signature block + certificate id
+  x.strokeStyle = '#13201c'; x.lineWidth = 2; x.beginPath(); x.moveTo(250, 1180); x.lineTo(690, 1180); x.stroke();
+  x.fillStyle = '#13201c'; x.font = `700 32px ${BODY}`; x.fillText(CONFIG.APP_NAME, 470, 1228);
+  x.fillStyle = '#5a6a65'; x.font = `400 24px ${BODY}`; x.fillText('Wellness. Insight. Skills. Education.', 470, 1266);
+  x.beginPath(); x.moveTo(1310, 1180); x.lineTo(1750, 1180); x.stroke();
+  x.fillStyle = '#13201c'; x.font = `700 32px ${BODY}`; x.fillText(certId(c), 1530, 1228);
+  x.fillStyle = '#5a6a65'; x.font = `400 24px ${BODY}`; x.fillText('Certificate ID', 1530, 1266);
+  return cv;
+}
+
+const certFile = ext => ('Certificate - ' + CERT.course.title + ' - ' + (S.user.name || S.user.email)).replace(/[\\/:*?"<>|]+/g, '').slice(0, 120) + '.' + ext;
+// A one-page A4 landscape PDF holding the certificate as a JPEG (no outside library needed)
+function jpegToPdf(canvas){
+  const b64 = canvas.toDataURL('image/jpeg', 0.93).split(',')[1], bin = atob(b64), img = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) img[i] = bin.charCodeAt(i);
+  const enc = new TextEncoder(), parts = [], offsets = []; let size = 0;
+  const push = chunk => { const u = typeof chunk === 'string' ? enc.encode(chunk) : chunk; parts.push(u); size += u.length; };
+  const obj = (n, body) => { offsets[n] = size; push(n + ' 0 obj\n' + body + '\nendobj\n'); };
+  const PW = 841.89, PH = 595.28, draw = `q ${PW} 0 0 ${PH} 0 0 cm /Im0 Do Q`;
+  push('%PDF-1.4\n%âãÏÓ\n');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+  offsets[4] = size;
+  push(`4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${img.length} >>\nstream\n`);
+  push(img); push('\nendstream\nendobj\n');
+  obj(5, `<< /Length ${draw.length} >>\nstream\n${draw}\nendstream`);
+  const xref = size;
+  push('xref\n0 6\n0000000000 65535 f \n' + [1, 2, 3, 4, 5].map(n => String(offsets[n]).padStart(10, '0') + ' 00000 n \n').join(''));
+  push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(parts, { type:'application/pdf' });
+}
+function saveBlob(blob, name){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function downloadCert(kind, btn){
+  if (!CERT) return;
+  const label = btn.innerHTML; btn.disabled = true;
+  try {
+    if (kind === 'png') { await new Promise(res => CERT.canvas.toBlob(b => { saveBlob(b, certFile('png')); res(); }, 'image/png')); }
+    else {
+      saveBlob(jpegToPdf(CERT.canvas), certFile('pdf'));
+    }
+    toast('Certificate downloaded.');
+  } catch(e){ toast(e.message || 'Download failed.'); }
+  finally { btn.disabled = false; btn.innerHTML = label; }
+}
+
 function closeDetail(fromHistory){
   if ($('#detail').hidden) return;
   $('#detail').hidden = true; $('#cdBox').innerHTML = '';
@@ -1421,6 +1605,11 @@ $('#detail').addEventListener('click', ev => {
   else if (b.dataset.cd === 'start') { $('#detail').hidden = true; $('#cdBox').innerHTML = ''; openCourse(id, { replace:true }); }
   else if (b.dataset.cd === 'share') { const sh = $('#cdShare'); sh.hidden = !sh.hidden; b.setAttribute('aria-expanded', String(!sh.hidden)); if (!sh.hidden) { $('#cdLink').select(); sh.scrollIntoView({ block:'nearest', behavior:'smooth' }); } }
   else if (b.dataset.cd === 'copy') copyLink(b);
+  else if (b.dataset.cd === 'cert') openCert(id, { back:'course' });
+  else if (b.dataset.cd === 'course') openDetail(id);
+  else if (b.dataset.cd === 'certs') openCerts();
+  else if (b.dataset.cd === 'certview') openCert(b.dataset.id, { back:'list' });
+  else if (b.dataset.cd === 'png' || b.dataset.cd === 'pdf') downloadCert(b.dataset.cd, b);
   else if (b.dataset.cd === 'native') { const c = S.courses.find(x => x.id === id); navigator.share({ title: c ? c.title : CONFIG.APP_NAME, text: 'Take this course on ' + CONFIG.APP_NAME + ':', url: shareLink(id) }).catch(() => {}); }
 });
 
@@ -1487,9 +1676,11 @@ function closeCourse(fromHistory){
   RT = null;
   $('#pStage').innerHTML = ''; $('#player').hidden = true; document.body.style.overflow = '';
   if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-  if (!fromHistory && history.state && history.state.player) history.back();
+  const done = S.justDone; S.justDone = null;
+  if (!fromHistory && history.state && history.state.player) { if (done) history.replaceState({ detail:true }, ''); else history.back(); }
   renderCourses();
   saving.then(() => renderCourses({ animate:false }));
+  if (done) setTimeout(() => openCert(done, { noPush: !fromHistory }), CALM() ? 0 : 350);   // show the new certificate
 }
 window.closeCourse = closeCourse;
 window.addEventListener('popstate', () => { if (!$('#player').hidden) closeCourse(true); else closeDetail(true); });
@@ -1657,6 +1848,8 @@ document.addEventListener('click', ev => {
 $('#avatarBtn').onclick = () => $('#menu').hidden = !$('#menu').hidden;
 $('#logoutBtn').onclick = () => logout();
 $('#refreshBtn').onclick = () => { $('#menu').hidden = true; boot(); };
+$('#certsBtn').onclick = () => { $('#menu').hidden = true; openCerts(); };
+$('#stDoneBtn').onclick = () => openCerts();
 $('#themeBtn').onclick = () => {
   const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   const next = cur === 'dark' ? 'light' : 'dark'; store.set('lms.theme', next); applyTheme(next);
