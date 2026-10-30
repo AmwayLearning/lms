@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://wiseprogramme.com/xapi/courses/nutrients-utilisation-in-human" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en-US">Module 3: Nutrients Utilisation in Human: Metabolic Pathways</name>
+      <description lang="en-US">How carbohydrates, fats and proteins are digested, absorbed and metabolised to provide energy, support body functions and adapt to different energy demands. Three sections with videos and animated 2.5D lessons, pocket notes, slides and a knowledge check.</description>
+      <launch lang="en-US">index.html</launch>
+    </activity>
+  </activities>
+</tincan>
