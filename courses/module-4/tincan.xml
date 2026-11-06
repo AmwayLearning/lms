@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://wiseprogramme.com/xapi/courses/nutrition-throughout-life-stages" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en-US">Module 4: Nutrition Throughout the Life Stages</name>
+      <description lang="en-US">How nutritional needs change across the lifespan, from pregnancy and early childhood to older age, and how a balanced diet supports healthy growth, well-being and long-term health. Five short interactive sections, 2-page pocket notes and a knowledge check.</description>
+      <launch lang="en-US">index.html</launch>
+    </activity>
+  </activities>
+</tincan>
