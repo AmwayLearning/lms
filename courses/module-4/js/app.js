@@ -6,8 +6,9 @@ const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const PN = ["assets/docs/Module_4_Pocket_Notes_p1.jpg", "assets/docs/Module_4_Pocket_Notes_p2.jpg"];
-/* PDF slides: put the PDF in assets/docs and its file name below. Leave empty to show "coming soon". */
-const PDF_FILE = "";
+/* PDF slides: path to the PDF in assets/docs. Leave empty to show "coming soon". */
+const PDF_PATH = "assets/docs/Module_4_Nutrition_Throughout_Life_Stages_Slides.pdf";
+const PDF_FILE = PDF_PATH ? "Module_4_Nutrition_Throughout_Life_Stages_Slides.pdf" : "";
 /* Amway+ link for the PDF slides: paste the link between the quotes below. Leave empty to show "link coming soon". */
 const AMWAY_PLUS_URL = "";
 const QUIZ = [
@@ -120,12 +121,12 @@ function home() {
     return `<button class="btile c2${dark ? " dark" : ""}${s.n > 3 ? " wide" : ""}" data-go="${s.id}" style="--acc:${s.acc}">
       <p class="eyebrow" style="color:${s.accs}">Section ${s.n}</p><h3 class="h-md grad">${s.name}</h3><p class="body" style="font-size:17px;margin-top:8px">${s.sub}</p>
       <span class="meta">${S.done[s.id] ? "Completed" : p ? p + "% done" : "Start"}<span class="track"><i style="width:${p}%"></i></span></span>
-      <span class="art">${s.photo ? `<span class="art-photo"><img src="${IMG[s.photo]}" alt="" draggable="false"></span>` : PLATE_ART}</span></button>`; };
+      <span class="art">${s.photo ? `<span class="art-photo"><img src="${IMG[s.photo]}" alt="" draggable="false"></span>` : (s.art || PLATE_ART)}</span></button>`; };
   setView(`
     <section class="hero">
       <p class="eyebrow">Module 4</p>
       <h1 class="h-xl">Nutrition Throughout the Life Stages.</h1>
-      <p class="sub">What we need changes as we grow.</p>
+      <p class="sub">From the womb to ninety.</p>
       <div class="ctas"><button class="pill" data-go="s1">Start course</button><button class="more" data-go="notes">Pocket notes and PDF slides</button></div>
       <div class="hero-art"><img src="assets/img/cover.webp" srcset="assets/img/cover-sm.webp 760w, assets/img/cover.webp 1400w" sizes="(max-width:760px) 100vw, 1100px" alt="People at every life stage, from a baby to an older woman, behind a spread of healthy foods"></div>
     </section>
@@ -133,7 +134,7 @@ function home() {
       <h2 class="h-lg">Five short sections.<br><span style="color:var(--ink2)">One for every age.</span></h2>
       <div class="bento">
         ${SECTIONS.map((s, n) => card(s, n === 1 || n === 3)).join("")}
-        <button class="btile small c3" data-go="notes"><svg viewBox="0 0 52 52"><rect x="8" y="4" width="36" height="44" rx="8" fill="#0a84ff"/><path d="M16 18h20M16 26h20M16 34h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><span><h3 class="h-sm">Pocket notes and PDF slides</h3><span class="more" style="min-height:0;font-size:15px">View the 2-page notes</span></span></button>
+        <button class="btile small c3" data-go="notes"><svg viewBox="0 0 52 52"><rect x="8" y="4" width="36" height="44" rx="8" fill="#0a84ff"/><path d="M16 18h20M16 26h20M16 34h12" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><span><h3 class="h-sm">Pocket notes and PDF slides</h3><span class="more" style="min-height:0;font-size:15px">View notes, download slides</span></span></button>
         <button class="btile small c3${allDone() ? "" : " locked"}" data-go="quiz"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="${allDone() ? "#16a34a" : "#86868b"}"/><path d="M16 27l7 7 13-15" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><h3 class="h-sm">Knowledge check</h3><span class="small" style="font-size:14px">${S.quiz.passed ? `Done · ${S.quiz.last}% · Try again anytime` : allDone() ? `${QUIZ.length} questions` : `Unlocks after all ${SECTIONS.length} sections`}</span></span></button>
       </div>
     </section>`);
@@ -180,24 +181,25 @@ function section(id, at) {
     if (t.enter) { const c = t.enter(el, api); if (typeof c === "function") slideClean = c; }
     $$("[data-act]", el).forEach(b => b.addEventListener("click", () => { SFX.play("tap"); b.dataset.act === "home" ? home() : finish(); }));
     if (!S.seen[id].includes(t.id)) { S.seen[id].push(t.id); XAPI.experienced(t.id, t.title); }
-    if (t.end && !S.done[id]) { S.done[id] = true; XAPI.sectionCompleted(sec.id, sec.title); }
+    const isEnd = !!t.end || i === list.length - 1;
+    if (isEnd && !S.done[id]) { S.done[id] = true; XAPI.sectionCompleted(sec.id, sec.title); }
     S.pos[id] = i;
     $("#pcount").textContent = `${i + 1} of ${list.length}`;
     $("#lbar").style.width = (i + 1) / list.length * 100 + "%";
     $$("#pdots button").forEach((d, m) => { d.toggleAttribute("aria-current", m === i); d.classList.toggle("seen", S.seen[id].includes(list[m].id)); });
     back.disabled = i === 0;
-    next.textContent = t.end ? (k < last ? "Next section" : "Knowledge check") : "Next";
+    next.textContent = isEnd ? (k < last ? "Next section" : "Knowledge check") : "Next";
     paintRing(); save();
   }
   back.addEventListener("click", () => { if (i > 0) { SFX.play("whoosh"); show(i - 1, -1); } });
-  next.addEventListener("click", () => { if (list[i].end) { SFX.play("tap"); finish(); } else { SFX.play("whoosh"); show(i + 1, 1); } });
+  next.addEventListener("click", () => { if (list[i].end || i === list.length - 1) { SFX.play("tap"); finish(); } else { SFX.play("whoosh"); show(i + 1, 1); } });
   $$("#pdots button").forEach(d => d.addEventListener("click", () => { const n = +d.dataset.n; if (n !== i) { SFX.play("whoosh"); show(n, n > i ? 1 : -1); } }));
   /* swipe left / right */
   let sx = 0, sy = 0, st = 0;
   stage.addEventListener("touchstart", e => { if (e.target.closest("input[type=range],.seg")) { st = 0; return; } const p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now(); }, { passive: true });
   stage.addEventListener("touchend", e => {
     if (!st) return; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy; st = 0;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) { if (dx < 0 && !list[i].end) next.click(); else if (dx > 0) back.click(); }
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) { if (dx < 0 && i < list.length - 1) next.click(); else if (dx > 0) back.click(); }
   }, { passive: true });
   const key = e => { if (e.target.closest("input,textarea") || !$("#menu").hidden) return; if (e.key === "ArrowRight") next.click(); if (e.key === "ArrowLeft") back.click(); };
   addEventListener("keydown", key);
@@ -210,12 +212,12 @@ function notes() {
   setAcc(null); nav("notes");
   const pdfBtn = PDF_FILE
     ? (window.LINK_OUT ? (AMWAY_PLUS_URL ? `<a class="pill" href="${AMWAY_PLUS_URL}" target="_blank" rel="noopener" data-dl="slides">Open PDF slides</a>` : `<button class="pill" disabled>PDF slides coming soon</button>`)
-      : `<a class="pill" href="assets/docs/${PDF_FILE}" download="${PDF_FILE}" data-dl="slides">Download PDF slides</a>`)
+      : `<a class="pill" href="${PDF_PATH}" download="${PDF_FILE}" data-dl="slides">Download PDF slides</a>`)
     : `<button class="pill" disabled aria-disabled="true">PDF slides coming soon</button>`;
   setView(`
     <section class="notes-head"><p class="eyebrow" style="color:var(--blue)">Pocket notes and PDF slides</p><h1 class="h-lg">The whole module.<br>On two pages.</h1>
       <div class="ctas">${pdfBtn}</div>
-      <p class="small" style="margin-top:12px">${PDF_FILE ? "Slides: PDF." : "The PDF slides will be available here soon."} Tap a page of the pocket notes to zoom in.</p>
+      <p class="small" style="margin-top:12px">${PDF_FILE ? "Slides: 60 slides · PDF · 2.7 MB." : "The PDF slides will be available here soon."} Tap a page of the pocket notes to zoom in.</p>
       <div class="aplus">
         <p><b>Using Amway+?</b> If the PDF won't download, copy this link and open it in your usual browser (like Chrome or Safari).</p>
         <div class="aplus-row">
