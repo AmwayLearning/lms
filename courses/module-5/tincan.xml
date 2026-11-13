@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://wiseprogramme.com/xapi/courses/nutrition-and-ncds" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en-US">Module 5: Nutrition and NCDs</name>
+      <description lang="en-US">Preventing non-communicable diseases through lifestyle management. Three short lessons (about 8 minutes): Introduction to NCDs, Importance of Prevention, and Strategies to Support NCDs Management. Downloadable PDF slides and a knowledge check.</description>
+      <launch lang="en-US">index.html</launch>
+    </activity>
+  </activities>
+</tincan>
