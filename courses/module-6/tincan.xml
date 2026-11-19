@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://wiseprogramme.com/xapi/courses/nutrition-and-health-trends" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en-US">Module 6: Nutrition and Health Trends</name>
+      <description lang="en-US">Three short lessons (about 8 minutes): Weight Management, Gut Health, and Cellular Health. Downloadable PDF slides and a knowledge check.</description>
+      <launch lang="en-US">index.html</launch>
+    </activity>
+  </activities>
+</tincan>
